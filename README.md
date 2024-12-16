@@ -22,7 +22,7 @@ pip install requirements.txt
 1. **Data Preparation**: Prepare your stego-images and cover-images datasets in a suitable format. The dataset should be split into training, validation, and testing subsets.
 2. **Model Training**: Use the provided training scripts to train the SRNet_CBAM model on your dataset. You may need to adjust hyperparameters such as learning rate, batch size, and number of epochs according to your specific requirements.
 ```bash
-python train.py --dataset_path /your/dataset/path --learning_rate 0.001 --batch_size 32 --num_epochs 50
+python train.py
 ```
 3. **Model Evaluation**: After training, evaluate the performance of the model using the testing subset of your dataset. The evaluation metrics such as accuracy, precision, recall, and F1-score will be calculated to assess the model's effectiveness.
 ```bash
