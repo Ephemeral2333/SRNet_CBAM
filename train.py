@@ -34,7 +34,7 @@ logger_info(logger_name, log_path=os.path.join(results_save_dir, logger_name + '
 logger = logging.getLogger(logger_name)
 logger.info('#' * 50)
 logger.info('mode: {:s}'.format(c.mode))
-logger.info('model: SRNet')
+logger.info('model: SRNet_CBAM')
 logger.info('train data dir: {:s}'.format(c.train_data_dir))
 logger.info('val data dir: {:s}'.format(c.val_data_dir))
 logger.info('test data dir: {:s}'.format(c.test_data_dir))
@@ -79,8 +79,8 @@ for epoch in range(c.epochs):
         torch.save(model.state_dict(), os.path.join(model_save_dir, 'checkpoint_%.3i' % epoch + '.pt'))
 
     # Early stopping
-    # if early_stopping.early_stop:
-    #     logger.info("Early stopping")
-    #     break
+    if early_stopping.early_stop:
+        logger.info("Early stopping")
+        break
 
 wandb.finish()
