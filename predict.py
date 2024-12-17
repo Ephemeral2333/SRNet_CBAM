@@ -1,17 +1,23 @@
 # predict.py
 import torch
-from model.SRNet import Model
+import argparse
+from model.SRNet_CBAM import Model
 from PIL import Image
 from torchvision import transforms
 import config as c
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+args = argparse.ArgumentParser(description='SRNet')
+args.add_argument('--image_path', type=str, help='image path')
+args.add_argument('--pretrained_path', type=str, default=None, help='pre-trained model path')
+args = args.parse_args()
+
 # Initialize model
 model = Model().to(device)
 
 # Load pretrained model
-if c.pre_trained_srnet_path is not None:
+if args.pretrained_path:
     model.load_state_dict(torch.load(c.pre_trained_srnet_path))
 else:
     print('No pre-trained model path provided.')
@@ -37,10 +43,12 @@ def predict(image_path):
     return prediction.item()
 
 if __name__ == '__main__':
-    image_path = '/root/autodl-tmp/stego/7.pgm'
-    print('Predicting image: {:s}'.format(image_path))
+    image_path = args.image_path
+    if image_path is None:
+        print('No image path provided.')
+        exit()
     result = predict(image_path)
     if result == 0:
-        print('判断为非隐写图像')
+        print('Judged as cover image')
     elif result == 1:
-        print('判断为隐写图像')
+        print('Judged as stego image')

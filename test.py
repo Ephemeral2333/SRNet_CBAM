@@ -1,5 +1,6 @@
 # test_model.py
 import torch
+import argparse
 import os
 import logging
 import numpy as np
@@ -13,8 +14,14 @@ from utils.terminal import MetricMonitor
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+# add argparse
+parser = argparse.ArgumentParser(description='SRNet_CBAM')
+parser.add_argument('--test_data_dir', type=str, default=c.test_data_dir, help='test data dir')
+parser.add_argument('--pretrained_path', type=str, default=c.pre_trained_srnet_path, help='pre-trained model path')
+args = parser.parse_args()
+
 # Create directories for saving results
-results_save_dir = os.path.join('results', 'SRNet_CBAM_2')
+results_save_dir = os.path.join('results', 'SRNet_CBAM')
 os.makedirs(results_save_dir, exist_ok=True)
 
 # Logging setup
@@ -26,16 +33,16 @@ logger = logging.getLogger(logger_name)
 model = Model().to(device)
 
 # Load pretrained model
-if c.pre_trained_srnet_path is not None:
-    model.load_state_dict(torch.load(c.pre_trained_srnet_path))
-    logger.info('Loaded pre-trained model from {:s}'.format(c.pre_trained_srnet_path))
-    logger.info('Testing dir {:s}'.format(c.test_data_dir))
+if args.pretrained_path:
+    model.load_state_dict(torch.load(args.pretrained_path))
+    logger.info('Loaded pre-trained model from {:s}'.format(args.pretrained_path))
+    logger.info('Testing dir {:s}'.format(args.test_data_dir))
 else:
     logger.error('No pre-trained model path provided.')
     exit()
 
 # Data loader
-test_loader = get_test_loader(c.test_data_dir, c.test_batch_size)
+test_loader = get_test_loader(args.test_data_dir, c.test_batch_size)
 
 # Testing loop
 model.eval()

@@ -22,11 +22,11 @@ pip install -r requirements.txt
 1. **Data Preparation**: Prepare your stego-images and cover-images datasets in a suitable format. The dataset should be split into training, validation, and testing subsets. The dataset used in our experiments can be downloaded from [here](https://drive.google.com/file/d/10OSYnkWYLF166zJOk_x6Olo5IR150l9U/view?usp=drive_link). Please note that you may need to adapt the dataset to the specific requirements of the model and the scripts provided.
 2. **Model Training**: Use the provided training scripts to train the SRNet_CBAM model on your dataset. You may need to adjust hyperparameters such as learning rate, batch size, and number of epochs according to your specific requirements.
 ```bash
-python train.py
+python train.py --train_data_dir ./data/wow_1.0/train --val_data_dir ./data/wow_1.0/validation --epochs 50 --pretrained_path /path/to/pretrained_model
 ```
 3. **Model Evaluation**: After training, evaluate the performance of the model using the testing subset of your dataset. The evaluation metrics such as accuracy, precision, recall, and F1-score will be calculated to assess the model's effectiveness.
 ```bash
-python test.py
+python test_model.py --test_data_dir ./data/wow_1.0/test --pretrained_path /path/to/trained_model
 ```
 4. **Prediction**: Use the trained model to predict whether an image contains hidden data or not.
 ```bash

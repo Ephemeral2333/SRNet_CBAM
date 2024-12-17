@@ -1,5 +1,6 @@
 # train.py
 import torch
+import argparse
 import os
 import wandb
 import config as c
@@ -14,6 +15,14 @@ import logging
 # Set device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+# Using argument parser to get the configuration
+parser = argparse.ArgumentParser(description='SRNet_CBAM')
+parser.add_argument('--train_data_dir', type=str, default=c.train_data_dir, help='train data dir')
+parser.add_argument('--val_data_dir', type=str, default=c.val_data_dir, help='val data dir')
+parser.add_argument('--epochs', type=int, default=c.epochs, help='number of epochs')
+parser.add_argument('--pretrained_path', type=str, default=c.pre_trained_srnet_path, help='pre-trained model path')
+
+
 # Create directories for saving models and results
 model_save_dir = os.path.join('checkpoints', 'SRNet_CBAM')
 results_save_dir = os.path.join('results', 'SRNet_CBAM')
@@ -23,7 +32,7 @@ mkdirs(results_save_dir)
 # Initialize WandB
 wandb.init(project="SRNet_CBAM", config={
     "learning_rate": c.lr,
-    "epochs": c.epochs,
+    "epochs": parser.parse_args().epochs,
     "batch_size": c.train_batch_size,
     "weight_decay": c.weight_decay
 })
@@ -35,22 +44,21 @@ logger = logging.getLogger(logger_name)
 logger.info('#' * 50)
 logger.info('mode: {:s}'.format(c.mode))
 logger.info('model: SRNet_CBAM')
-logger.info('train data dir: {:s}'.format(c.train_data_dir))
-logger.info('val data dir: {:s}'.format(c.val_data_dir))
-logger.info('test data dir: {:s}'.format(c.test_data_dir))
+logger.info('train data dir: {:s}'.format(parser.parse_args().train_data_dir))
+logger.info('val data dir: {:s}'.format(parser.parse_args().val_data_dir))
 
 # Initialize model and early stopping
 model = Model().to(device)
 early_stopping = early_stopping(patience=7, verbose=True)
 
 # Load pretrained model if available
-if c.pre_trained_srnet_path is not None:
-    model.load_state_dict(torch.load(c.pre_trained_srnet_path))
-    logger.info('Load pre-trained model from {:s}'.format(c.pre_trained_srnet_path))
+if parser.parse_args().pretrained_path:
+    model.load_state_dict(torch.load(parser.parse_args().pretrained_path))
+    logger.info('Load pre-trained model from {:s}'.format(parser.parse_args().pretrained_path))
 
 # Data loaders
-train_loader = get_train_loader(c.train_data_dir, c.train_batch_size)
-val_loader = get_val_loader(c.val_data_dir, c.val_batch_size)
+train_loader = get_train_loader(parser.parse_args().train_data_dir, c.train_batch_size)
+val_loader = get_val_loader(parser.parse_args().val_data_dir, c.val_batch_size)
 
 # Loss function, optimizer, and scheduler
 loss_fn = torch.nn.CrossEntropyLoss()
@@ -58,7 +66,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=c.lr, weight_decay=c.weight_
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=c.weight_decay_step, gamma=c.gamma)
 
 # Training loop
-for epoch in range(c.epochs):
+for epoch in range(parser.parse_args().epochs):
     epoch += 1
 
     train_losses_avg, train_acc_avg = train_one_epoch(model, train_loader, loss_fn, optimizer, device, epoch)
