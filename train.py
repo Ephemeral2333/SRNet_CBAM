@@ -1,9 +1,8 @@
 # train.py
 import torch
 import os
-from torch.utils.tensorboard import SummaryWriter
+import wandb
 import config as c
-# from model.SRNet import Model
 from model.SRNet_CBAM import Model
 from utils.dirs import mkdirs
 from utils.logger import logger_info
@@ -16,10 +15,18 @@ import logging
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Create directories for saving models and results
-model_save_dir = os.path.join('checkpoints', 'SRNet_CBAM_2')
-results_save_dir = os.path.join('results', 'SRNet_CBAM_2')
+model_save_dir = os.path.join('checkpoints', 'SRNet_CBAM')
+results_save_dir = os.path.join('results', 'SRNet_CBAM')
 mkdirs(model_save_dir)
 mkdirs(results_save_dir)
+
+# Initialize WandB
+wandb.init(project="SRNet_CBAM", config={
+    "learning_rate": c.lr,
+    "epochs": c.epochs,
+    "batch_size": c.train_batch_size,
+    "weight_decay": c.weight_decay
+})
 
 # 日志记录
 logger_name = c.mode
@@ -32,9 +39,8 @@ logger.info('train data dir: {:s}'.format(c.train_data_dir))
 logger.info('val data dir: {:s}'.format(c.val_data_dir))
 logger.info('test data dir: {:s}'.format(c.test_data_dir))
 
-# Initialize model, writer, and early stopping
+# Initialize model and early stopping
 model = Model().to(device)
-writer = SummaryWriter(log_dir='./runs/SRNet_CBAM_2')
 early_stopping = early_stopping(patience=7, verbose=True)
 
 # Load pretrained model if available
@@ -58,15 +64,13 @@ for epoch in range(c.epochs):
     train_losses_avg, train_acc_avg = train_one_epoch(model, train_loader, loss_fn, optimizer, device, epoch)
     scheduler.step()
 
-    writer.add_scalar('Loss/train', train_losses_avg, epoch)
-    writer.add_scalar('Accuracy/train', train_acc_avg, epoch)
+    wandb.log({'epoch': epoch, 'loss_train': train_losses_avg, 'accuracy_train': train_acc_avg})
 
     if epoch % c.val_freq == 0:
         val_losses_avg, val_acc_avg = validate(model, val_loader, loss_fn, device, epoch, optimizer, logger, c, train_losses_avg,
-                 train_acc_avg)
+                                               train_acc_avg)
 
-        writer.add_scalar('Loss/val', val_losses_avg, epoch)
-        writer.add_scalar('Accuracy/val', val_acc_avg, epoch)
+        wandb.log({'epoch': epoch, 'loss_val': val_losses_avg, 'accuracy_val': val_acc_avg})
 
         early_stopping(val_losses_avg, model)
 
@@ -79,4 +83,4 @@ for epoch in range(c.epochs):
     #     logger.info("Early stopping")
     #     break
 
-writer.close()
+wandb.finish()

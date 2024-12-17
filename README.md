@@ -15,7 +15,7 @@ git clone https://github.com/Ephemeral2333/SRNet_CBAM.git
 ```
 2. Install the required dependencies. The project likely requires popular deep learning frameworks such as TensorFlow or PyTorch, along with other common libraries like NumPy and OpenCV. You can install them using `pip` or `conda`. For example, if using `pip`:
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Usage

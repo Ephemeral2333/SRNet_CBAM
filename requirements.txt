@@ -1,4 +1,3 @@
-torch
 tensorboard
 numpy
-opencv-python
+tqdm
