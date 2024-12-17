@@ -2,3 +2,4 @@ tensorboard
 numpy
 tqdm
 wandb
+scikit-learn

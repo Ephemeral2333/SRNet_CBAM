@@ -26,11 +26,11 @@ python train.py
 ```
 3. **Model Evaluation**: After training, evaluate the performance of the model using the testing subset of your dataset. The evaluation metrics such as accuracy, precision, recall, and F1-score will be calculated to assess the model's effectiveness.
 ```bash
-python test_model.py
+python test.py
 ```
 4. **Prediction**: Use the trained model to predict whether an image contains hidden data or not.
 ```bash
-python predict_image.py
+python predict.py
 ```
 ## Results
 Our experiments on standard steganalysis datasets have shown that SRNet_CBAM outperforms the original SRNet model, achieving higher detection accuracy and better generalization ability. The detailed experimental results, including comparison tables and graphs, can be found in the `results` directory of the project.
