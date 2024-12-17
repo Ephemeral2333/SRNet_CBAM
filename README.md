@@ -17,6 +17,10 @@ git clone https://github.com/Ephemeral2333/SRNet_CBAM.git
 ```bash
 pip install -r requirements.txt
 ```
+3. Login to wandb: Register on [wandb](https://wandb.ai/site) and login to wandb using the following command:
+```bash
+wandb login
+```
 
 ## Usage
 1. **Data Preparation**: Prepare your stego-images and cover-images datasets in a suitable format. The dataset should be split into training, validation, and testing subsets. The dataset used in our experiments can be downloaded from [here](https://drive.google.com/file/d/10OSYnkWYLF166zJOk_x6Olo5IR150l9U/view?usp=drive_link). Please note that you may need to adapt the dataset to the specific requirements of the model and the scripts provided.
